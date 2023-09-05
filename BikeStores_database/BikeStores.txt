@@ -1,0 +1,109 @@
+CREATE TABLE customers(
+    customer_id INT NOT NULL AUTO_INCREMENT,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    phone VARCHAR(11),
+    email VARCHAR(30), 
+    street VARCHAR(20),
+    city VARCHAR(20),
+    state VARCHAR(20),
+    zip_code INT,
+    CONSTRAINT PK_CUSTOMERS PRIMARY KEY(customer_id),
+    CONSTRAINT UNQ_CUSTOMERS UNIQUE(phone, email)
+);
+
+CREATE TABLE stores(
+    store_id INT NOT NULL AUTO_INCREMENT,
+    store_name VARCHAR(30) NOT NULL,
+    phone VARCHAR(11),
+    email VARCHAR(20),
+    street VARCHAR(20),
+    city VARCHAR(20),
+    state VARCHAR(20),
+    zip_code INT,
+    CONSTRAINT PK_STORES PRIMARY KEY(store_id),
+    CONSTRAINT UNQ_STORES UNIQUE(phone, email)
+);
+
+CREATE TABLE stocks(
+    store_id INT NOT NULL,
+    product_id INT,
+    quantity INT,
+    CONSTRAINT PK_STOCKS PRIMARY KEY(store_id),
+    CONSTRAINT FK_STORES_STOCKS FOREIGN KEY(store_id) REFERENCES stores(store_id),
+    CONSTRAINT FK_PRODUCTS_STOCKS FOREIGN KEY(product_id) REFERENCES products(product_id)
+    );
+
+CREATE TABLE staff(
+    staff_id INT NOT NULL AUTO_INCREMENT,
+    frist_name VARCHAR(20) NOT NULL,
+    last_name VARCHAR(20) NOT NULL,
+    email VARCHAR(20),
+    phone varchar(11),
+    active INT CHECK(active =1 or active =0),
+    store_id INT,
+    manager_id INT,
+    CONSTRAINT PK_STAFF PRIMARY KEY(staff_id),
+    CONSTRAINT UNQ_STAFF UNIQUE(phone, email),
+    CONSTRAINT FK_STORES_STAFF FOREIGN KEY(store_id) REFERENCES stores(store_id),
+    CONSTRAINT FK_STAFF_MANGER FOREIGN KEY(manager_id) REFERENCES staff(staff_id)
+);
+
+CREATE TABLE orders(
+    order_id INT NOT NULL AUTO_INCREMENT,
+    order_status INT CHECK(order_status IN(0,1)),
+    order_date DATE,
+    required_date DATE,
+    shipped_date DATE, 
+    customer_id INT,
+    store_id INT,
+    staff_id INT,
+    CONSTRAINT PK_ORDERS PRIMARY KEY(order_id),
+    CONSTRAINT FK_CUSTOMERS_ORDERS FOREIGN KEY(customer_id) REFERENCES customers(customer_id),
+    CONSTRAINT FK_STORES_ORDERS FOREIGN KEY(store_id) REFERENCES stores(store_id),
+    CONSTRAINT FK_STaFF_ORDERS FOREIGN KEY(staff_id) REFERENCES staff(staff_id)
+
+);
+
+CREATE TABLE categories(
+    category_id INT NOT NULL AUTO_INCREMENT,
+    category_name VARCHAR(20) NOT NULL,
+    CONSTRAINT PK_CATEGORIES PRIMARY KEY(category_id)
+);
+
+CREATE TABLE brands(
+    brand_id INT NOT NULL AUTO_INCREMENT,
+    brand_name VARCHAR(20) NOT NULL,
+    CONSTRAINT PK_BRANDS PRIMARY KEY(brand_id)
+);
+
+CREATE TABLE products(
+    product_id INT NOT NULL AUTO_INCREMENT,
+    product_name VARCHAR(20) NOT NULL,
+    brand_id INT,
+    category_id INT,
+    model_year YEAR,
+    price DECIMAL(5,2),
+    CONSTRAINT PK_PRODUCTS PRIMARY KEY(product_id),
+    CONSTRAINT FK_CATEGORIES_PRODUCTS FOREIGN KEY(category_id) REFERENCES categories(category_id),
+    CONSTRAINT FK_BRANDS_PRODUCTS FOREIGN KEY(brand_id) REFERENCES brands(brand_id)
+);
+
+
+CREATE TABLE order_items(
+    order_id INT,
+    item_id INT,
+    product_id INT,
+    quantity INT,
+    price decimal(5,2),
+    discont decimal(2,2),
+    CONSTRAINT PK_ORDER_ITEMS PRIMARY KEY(order_id, item_id),
+    CONSTRAINT FK_ORDERS_OREDER_ITEMS FOREIGN KEY(order_id) REFERENCES orders(order_id),
+    CONSTRAINT FK_PRODUCTS_ORDER_ITEMS FOREIGN KEY(product_id) REFERENCES products(product_id)
+);
+
+show tables;
+DROP TABLE customers;
+DROP TABLE staff;
+DROP TABLE stores;
+DROP TABLE orders;
